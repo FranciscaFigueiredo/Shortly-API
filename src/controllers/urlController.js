@@ -20,19 +20,24 @@ export async function postShortenUrl(req, res) {
 
 export async function getShortenedUrl(req, res) {
     const { shortUrl } = req.params;
-  
-    const shortenedUrl = await connection.query(`
-        SELECT 
-            id, "shortUrl", url
-        FROM "shortenedUrls"
-        WHERE "shortUrl" = $1;`
-    , [shortUrl]);
 
-    if (!shortenedUrl.rowCount) {
-        return res.sendStatus(404);
+    try {
+        const shortenedUrl = await connection.query(`
+            SELECT 
+                id, "shortUrl", url
+            FROM "shortenedUrls"
+            WHERE "shortUrl" = $1;`
+        , [shortUrl]);
+
+        if (!shortenedUrl.rowCount) {
+            return res.sendStatus(404);
+        }
+
+        res.status(200).send(shortenedUrl.rows[0]);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
     }
-
-    res.status(200).send(shortenedUrl.rows[0]);
 }
 
 export async function deleteShortenUrl(req, res) {

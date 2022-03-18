@@ -39,18 +39,23 @@ export async function deleteShortenUrl(req, res) {
     const { id } = req.params;
 
     const { user } = res.locals;
-  
-    const result = await connection.query(`
-        DELETE FROM "shortenedUrls"
-        WHERE 
-            "shortenedUrls".id = $1
-        AND "userId" = $2
-        RETURNING *;`
-    , [id, user.id]);
 
-    if (!result.rowCount) {
-        return res.sendStatus(401);
+    try {
+        const result = await connection.query(`
+            DELETE FROM "shortenedUrls"
+            WHERE 
+                "shortenedUrls".id = $1
+            AND "userId" = $2
+            RETURNING *;`
+        , [id, user.id]);
+
+        if (!result.rowCount) {
+            return res.sendStatus(401);
+        }
+
+        return res.sendStatus(204);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
     }
-
-    res.sendStatus(204);
 }

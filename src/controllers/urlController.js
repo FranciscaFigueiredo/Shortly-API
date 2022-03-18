@@ -4,7 +4,7 @@ import { connection } from "../database.js";
 export async function postShortenUrl(req, res) {
     const { url } = req.body;
 
-    const user = res.locals.user;
+    const { user } = res.locals;
 
     const shortUrl = uuid().replaceAll('-', '');
   
@@ -38,7 +38,7 @@ export async function getShortenedUrl(req, res) {
 export async function deleteShortenUrl(req, res) {
     const { id } = req.params;
 
-    const user = res.locals.user;
+    const { user } = res.locals;
   
     const result = await connection.query(`
         DELETE FROM "shortenedUrls"

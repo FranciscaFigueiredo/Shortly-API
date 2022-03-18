@@ -7,15 +7,20 @@ export async function postShortenUrl(req, res) {
     const { user } = res.locals;
 
     const shortUrl = uuid().replaceAll('-', '');
-  
-    const result = await connection.query(`
-        INSERT INTO "shortenedUrls"
-            (url, "shortUrl", "userId")
-        VALUES ($1, $2, $3)
-        RETURNING "shortUrl";`
-    , [url, shortUrl, user.id]);
 
-    res.status(201).send(result.rows[0]);
+    try {
+        const result = await connection.query(`
+            INSERT INTO "shortenedUrls"
+                (url, "shortUrl", "userId")
+            VALUES ($1, $2, $3)
+            RETURNING "shortUrl";`
+        , [url, shortUrl, user.id]);
+    
+        res.status(201).send(result.rows[0]);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
 }
 
 export async function getShortenedUrl(req, res) {
